@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "forwardmeasure-named-entity-recognition-service"
+version = "1.0.0"
+description = "Engine-neutral KServe custom predictor with a pluggable NER engine"
+requires-python = ">=3.12,<3.13"
+# Runtime and test versions are resolved centrally by the Maven parent into
+# target/python-runtime. Keeping this list empty prevents a second, drifting
+# dependency-management surface in the Python leaf project.
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.forwardmeasure.nlp</groupId>
+        <artifactId>forwardmeasure-nlp-parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>named-entity-recognition-client-typescript</artifactId>
+    <name>ForwardMeasure Named Entity Recognition TypeScript Client</name>
+    <description>Generated TypeScript fetch client for the NER API</description>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>named-entity-recognition-contracts</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.build.directory}/generated-typescript</directory>
+                <targetPath>openapi-ts</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-ner-typescript-client</id>
+                        <phase>generate-resources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <inputSpec>${maven.multiModuleProjectDirectory}/contracts/openapi/named-entity-recognition-api.yaml</inputSpec>
+                            <generatorName>typescript-fetch</generatorName>
+                            <output>${project.build.directory}/generated-typescript</output>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <configOptions>
+                                <npmName>@forwardmeasure/named-entity-recognition-client</npmName>
+                                <npmVersion>${revision}</npmVersion>
+                                <supportsES6>true</supportsES6>
+                                <useSingleRequestParameter>true</useSingleRequestParameter>
+                                <withInterfaces>true</withInterfaces>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+

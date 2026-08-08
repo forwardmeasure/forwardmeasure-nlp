@@ -1,0 +1,75 @@
+openapi: 3.0.3
+
+info:
+  title: ForwardMeasure NLP Common API Definitions
+  version: 1.0.0
+  license:
+    name: Apache License, Version 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+
+paths: {}
+
+components:
+  schemas:
+    Timestamp:
+      type: string
+      format: date-time
+      nullable: true
+
+    ApiError:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error_summary
+        - http_status_code
+        - timestamp
+      properties:
+        error_summary:
+          type: string
+        http_status_code:
+          type: integer
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+
+    DetailedErrorResponse:
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+        - type: object
+          additionalProperties: false
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: "#/components/schemas/ApiError"
+
+  responses:
+    "400":
+      description: The request is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DetailedErrorResponse"
+    "404":
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DetailedErrorResponse"
+    "500":
+      description: An unexpected service error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DetailedErrorResponse"
+

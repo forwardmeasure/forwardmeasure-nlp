@@ -1,0 +1,4 @@
+httpx==${python.httpx.version}
+pytest==${python.pytest.version}
+pytest-asyncio==${python.pytest-asyncio.version}
+

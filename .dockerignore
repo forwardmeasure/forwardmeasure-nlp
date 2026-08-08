@@ -1,0 +1,11 @@
+.git
+.github
+.idea
+.vscode
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/*.pyc
+**/target/generated-client
+**/target/generated-typescript
+

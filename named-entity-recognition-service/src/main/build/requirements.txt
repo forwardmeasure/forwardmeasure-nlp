@@ -1,0 +1,5 @@
+fastapi==${python.fastapi.version}
+gliner==${gliner.version}
+pydantic==${python.pydantic.version}
+uvicorn[standard]==${python.uvicorn.version}
+

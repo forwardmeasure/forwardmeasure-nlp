@@ -1,0 +1,680 @@
+openapi: 3.0.3
+
+info:
+  title: ForwardMeasure Named Entity Recognition API
+  version: 1.0.0
+  description: |
+    Engine-neutral named entity recognition for text and offset-preserving text
+    segments.
+
+    The service identifies entity mentions. It does not resolve identities,
+    create canonical entities, infer relationships, own source documents, or
+    attach domain meaning such as investigations and evidence. Callers retain
+    those responsibilities and may use segment identifiers and base offsets to
+    correlate mentions with their source material.
+
+    GLiNER is the first inference engine, loaded in-process behind this API.
+    Engine selection, model details, and ensemble contributions are returned as
+    provenance rather than exposed as the principal request contract.
+  license:
+    name: Apache License, Version 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+  contact:
+    email: info@forwardmeasure.com
+
+servers:
+  - url: /api/v1/named-entity-recognition
+    description: Relative base path for the Named Entity Recognition API
+
+tags:
+  - name: Extractions
+    description: Synchronous named entity extraction
+  - name: Jobs
+    description: Durable asynchronous and batch extraction
+  - name: Profiles
+    description: Configured label and engine profiles
+  - name: Capabilities
+    description: Runtime limits and available engines
+
+# The service is cluster-internal by default. Authentication and invocation
+# policy belong at the platform edge and do not change the inference contract.
+security: []
+
+components:
+  parameters:
+    jobId:
+      name: jobId
+      in: path
+      required: true
+      description: Asynchronous NER job identifier.
+      schema:
+        type: string
+        format: uuid
+    profileName:
+      name: profileName
+      in: path
+      required: true
+      description: Stable profile name.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+
+  schemas:
+    NerExtractionRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - segments
+      properties:
+        request_id:
+          type: string
+          nullable: true
+          maxLength: 128
+          description: Optional caller correlation or idempotency value.
+        profile:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 128
+          description: Configured profile supplying labels and inference policy.
+          example: general-entities-v1
+        labels:
+          type: array
+          nullable: true
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          description: |
+            Entity labels requested by the caller. At least one of labels or
+            profile must be supplied. When both are supplied, labels override
+            the profile's configured label set for this request.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+          example:
+            - person
+            - organization
+            - location
+        segments:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/TextSegment"
+        options:
+          $ref: "#/components/schemas/NerExtractionOptions"
+
+    TextSegment:
+      type: object
+      additionalProperties: false
+      required:
+        - segment_id
+        - text
+      properties:
+        segment_id:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: Caller-stable identifier unique within the request.
+          example: page-3:text-17
+        text:
+          type: string
+          minLength: 1
+          maxLength: 100000
+        language:
+          type: string
+          nullable: true
+          maxLength: 35
+          description: Optional BCP 47 language hint.
+          example: en
+        base_offset:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+          description: Offset of the segment's first character in the source text.
+        source_ref:
+          type: string
+          nullable: true
+          maxLength: 512
+          description: Opaque caller-owned source reference such as a Docling item URI.
+
+    NerExtractionOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        threshold:
+          type: number
+          format: double
+          minimum: 0.0
+          maximum: 1.0
+          default: 0.5
+        overlap_policy:
+          $ref: "#/components/schemas/OverlapPolicy"
+        include_engine_results:
+          type: boolean
+          default: true
+        allow_nested_entities:
+          type: boolean
+          default: true
+
+    OverlapPolicy:
+      type: string
+      enum:
+        - preserve
+        - highest_confidence
+        - longest_span
+      default: highest_confidence
+
+    NerExtractionResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - extraction_id
+        - mentions
+        - engines
+        - created_at
+        - processing_time_ms
+      properties:
+        extraction_id:
+          type: string
+          format: uuid
+        request_id:
+          type: string
+          nullable: true
+        profile:
+          type: string
+          nullable: true
+        profile_version:
+          type: string
+          nullable: true
+        mentions:
+          type: array
+          items:
+            $ref: "#/components/schemas/EntityMention"
+        engines:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/EngineDescriptor"
+        warnings:
+          type: array
+          items:
+            $ref: "#/components/schemas/NerWarning"
+        created_at:
+          type: string
+          format: date-time
+        processing_time_ms:
+          type: integer
+          format: int64
+          minimum: 0
+
+    EntityMention:
+      type: object
+      additionalProperties: false
+      required:
+        - segment_id
+        - label
+        - text
+        - start
+        - end
+        - absolute_start
+        - absolute_end
+        - confidence
+      properties:
+        segment_id:
+          type: string
+        source_ref:
+          type: string
+          nullable: true
+        label:
+          type: string
+          description: Canonical label returned by the NER service.
+        text:
+          type: string
+        start:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Zero-based inclusive character offset within the segment.
+        end:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Zero-based exclusive character offset within the segment.
+        absolute_start:
+          type: integer
+          format: int64
+          minimum: 0
+        absolute_end:
+          type: integer
+          format: int64
+          minimum: 0
+        confidence:
+          type: number
+          format: double
+          minimum: 0.0
+          maximum: 1.0
+        engine_results:
+          type: array
+          items:
+            $ref: "#/components/schemas/EngineMentionResult"
+
+    EngineMentionResult:
+      type: object
+      additionalProperties: false
+      required:
+        - engine
+        - model
+        - label
+        - confidence
+      properties:
+        engine:
+          type: string
+        model:
+          type: string
+        model_revision:
+          type: string
+          nullable: true
+        label:
+          type: string
+        confidence:
+          type: number
+          format: double
+          minimum: 0.0
+          maximum: 1.0
+
+    EngineDescriptor:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - model
+        - available
+      properties:
+        name:
+          type: string
+          example: gliner
+        version:
+          type: string
+          nullable: true
+        model:
+          type: string
+          example: urchade/gliner_medium-v2.1
+        model_revision:
+          type: string
+          nullable: true
+        device:
+          type: string
+          nullable: true
+          example: cpu
+        available:
+          type: boolean
+
+    NerWarning:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        segment_id:
+          type: string
+          nullable: true
+
+    SubmitNerJobRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - extraction
+      properties:
+        extraction:
+          $ref: "#/components/schemas/NerExtractionRequest"
+
+    NerJobStatus:
+      type: string
+      enum:
+        - accepted
+        - processing
+        - completed
+        - failed
+        - cancelled
+
+    NerJobResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - job_id
+        - status
+        - created_at
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/NerJobStatus"
+        result_available:
+          type: boolean
+          default: false
+        error:
+          $ref: "#/components/schemas/NerError"
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    NerJobResult:
+      type: object
+      additionalProperties: false
+      required:
+        - job
+        - result
+      properties:
+        job:
+          $ref: "#/components/schemas/NerJobResponse"
+        result:
+          $ref: "#/components/schemas/NerExtractionResponse"
+
+    NerError:
+      type: object
+      additionalProperties: false
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+        message:
+          type: string
+        retriable:
+          type: boolean
+          default: false
+        details:
+          type: object
+          additionalProperties: true
+
+    NerProfile:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - version
+        - labels
+        - engines
+        - strategy
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+          nullable: true
+        labels:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+        engines:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        strategy:
+          $ref: "#/components/schemas/EnsembleStrategy"
+        threshold:
+          type: number
+          format: double
+          minimum: 0.0
+          maximum: 1.0
+        allow_nested_entities:
+          type: boolean
+
+    NerProfileList:
+      type: object
+      additionalProperties: false
+      required:
+        - profiles
+      properties:
+        profiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/NerProfile"
+
+    EnsembleStrategy:
+      type: string
+      enum:
+        - single_engine
+        - union
+        - intersection
+        - majority_vote
+        - highest_confidence
+        - weighted_consensus
+
+    NerCapabilities:
+      type: object
+      additionalProperties: false
+      required:
+        - service_version
+        - synchronous_extraction
+        - asynchronous_jobs
+        - limits
+        - engines
+        - ensemble_strategies
+      properties:
+        service_version:
+          type: string
+        synchronous_extraction:
+          type: boolean
+        asynchronous_jobs:
+          type: boolean
+        limits:
+          $ref: "#/components/schemas/NerLimits"
+        engines:
+          type: array
+          items:
+            $ref: "#/components/schemas/EngineDescriptor"
+        ensemble_strategies:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnsembleStrategy"
+
+    NerLimits:
+      type: object
+      additionalProperties: false
+      required:
+        - max_segments
+        - max_segment_characters
+        - max_total_characters
+        - max_labels
+      properties:
+        max_segments:
+          type: integer
+          minimum: 1
+        max_segment_characters:
+          type: integer
+          minimum: 1
+        max_total_characters:
+          type: integer
+          minimum: 1
+        max_labels:
+          type: integer
+          minimum: 1
+
+paths:
+  /extractions:
+    post:
+      tags:
+        - Extractions
+      summary: Extract named entity mentions synchronously
+      operationId: extractEntities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NerExtractionRequest"
+      responses:
+        "200":
+          description: Entity mentions and inference provenance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NerExtractionResponse"
+        "400":
+          $ref: "./common-definitions.yaml#/components/responses/400"
+        "413":
+          description: Request exceeds a configured inference limit.
+          content:
+            application/json:
+              schema:
+                $ref: "./common-definitions.yaml#/components/schemas/ErrorResponse"
+        "422":
+          description: Request fields are syntactically valid but violate NER request rules.
+          content:
+            application/json:
+              schema:
+                $ref: "./common-definitions.yaml#/components/schemas/DetailedErrorResponse"
+        "500":
+          $ref: "./common-definitions.yaml#/components/responses/500"
+        "503":
+          description: No configured NER engine is ready.
+          content:
+            application/json:
+              schema:
+                $ref: "./common-definitions.yaml#/components/schemas/ErrorResponse"
+
+  /jobs:
+    post:
+      tags:
+        - Jobs
+      summary: Submit a durable asynchronous NER job
+      operationId: submitNerJob
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitNerJobRequest"
+      responses:
+        "202":
+          description: Job accepted for asynchronous processing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NerJobResponse"
+        "400":
+          $ref: "./common-definitions.yaml#/components/responses/400"
+        "413":
+          description: Request exceeds a configured inference limit.
+        "501":
+          description: Durable asynchronous execution is not enabled.
+        "503":
+          description: No configured NER engine is ready.
+
+  /jobs/{jobId}:
+    get:
+      tags:
+        - Jobs
+      summary: Retrieve NER job status
+      operationId: getNerJob
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+      responses:
+        "200":
+          description: Current job status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NerJobResponse"
+        "404":
+          $ref: "./common-definitions.yaml#/components/responses/404"
+        "501":
+          description: Durable asynchronous execution is not enabled.
+
+  /jobs/{jobId}/result:
+    get:
+      tags:
+        - Jobs
+      summary: Retrieve a completed NER job result
+      operationId: getNerJobResult
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+      responses:
+        "200":
+          description: Completed job and its extraction result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NerJobResult"
+        "404":
+          $ref: "./common-definitions.yaml#/components/responses/404"
+        "409":
+          description: The job has not completed successfully.
+        "501":
+          description: Durable asynchronous execution is not enabled.
+
+  /profiles:
+    get:
+      tags:
+        - Profiles
+      summary: List configured NER profiles
+      operationId: listNerProfiles
+      responses:
+        "200":
+          description: Configured profiles.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NerProfileList"
+        "500":
+          $ref: "./common-definitions.yaml#/components/responses/500"
+
+  /profiles/{profileName}:
+    get:
+      tags:
+        - Profiles
+      summary: Retrieve a configured NER profile
+      operationId: getNerProfile
+      parameters:
+        - $ref: "#/components/parameters/profileName"
+      responses:
+        "200":
+          description: Configured profile.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NerProfile"
+        "404":
+          $ref: "./common-definitions.yaml#/components/responses/404"
+
+  /capabilities:
+    get:
+      tags:
+        - Capabilities
+      summary: Retrieve runtime NER capabilities and limits
+      operationId: getNerCapabilities
+      responses:
+        "200":
+          description: Runtime capabilities and configured limits.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NerCapabilities"
+        "500":
+          $ref: "./common-definitions.yaml#/components/responses/500"

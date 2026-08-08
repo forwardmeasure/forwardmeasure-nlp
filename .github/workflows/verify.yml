@@ -1,0 +1,32 @@
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Generate Contracts And Clients
+        run: mvn --batch-mode --no-transfer-progress clean verify
+
+      - name: Test Predictor In Its Production Runtime
+        run: >-
+          docker build
+          --target test
+          --file named-entity-recognition-service/Dockerfile
+          named-entity-recognition-service
+
