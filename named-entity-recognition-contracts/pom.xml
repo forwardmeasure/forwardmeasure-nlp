@@ -14,10 +14,9 @@
     <build>
         <resources>
             <resource>
-                <directory>${maven.multiModuleProjectDirectory}/contracts/openapi</directory>
+                <directory>${project.parent.basedir}/contracts/openapi</directory>
                 <targetPath>META-INF/forwardmeasure/nlp/openapi</targetPath>
             </resource>
         </resources>
     </build>
 </project>
-

@@ -43,7 +43,7 @@
                         <phase>generate-sources</phase>
                         <goals><goal>generate</goal></goals>
                         <configuration>
-                            <inputSpec>${maven.multiModuleProjectDirectory}/contracts/openapi/named-entity-recognition-api.yaml</inputSpec>
+                            <inputSpec>${project.parent.basedir}/contracts/openapi/named-entity-recognition-api.yaml</inputSpec>
                             <generatorName>python-fastapi</generatorName>
                             <output>${project.build.directory}/generated-server</output>
                             <generateApiTests>false</generateApiTests>
@@ -63,7 +63,7 @@
                         <phase>generate-sources</phase>
                         <goals><goal>generate</goal></goals>
                         <configuration>
-                            <inputSpec>${maven.multiModuleProjectDirectory}/contracts/openapi/named-entity-recognition-api.yaml</inputSpec>
+                            <inputSpec>${project.parent.basedir}/contracts/openapi/named-entity-recognition-api.yaml</inputSpec>
                             <generatorName>python</generatorName>
                             <output>${project.build.directory}/generated-client</output>
                             <generateApiTests>false</generateApiTests>
