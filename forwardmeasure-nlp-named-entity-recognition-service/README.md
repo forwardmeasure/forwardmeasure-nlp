@@ -34,8 +34,8 @@ From the repository root:
 ```bash
 mvn clean verify
 docker build --target test \
-  -f named-entity-recognition-service/Dockerfile \
-  named-entity-recognition-service
+  -f forwardmeasure-nlp-named-entity-recognition-service/Dockerfile \
+  forwardmeasure-nlp-named-entity-recognition-service
 ```
 
 Generate and build the production image through Maven:

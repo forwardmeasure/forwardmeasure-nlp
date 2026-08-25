@@ -15,12 +15,12 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>named-entity-recognition-contracts</artifactId>
+                <artifactId>forwardmeasure-nlp-named-entity-recognition-contracts</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>named-entity-recognition-client-java</artifactId>
+                <artifactId>forwardmeasure-nlp-named-entity-recognition-client-java</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>

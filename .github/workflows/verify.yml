@@ -27,6 +27,6 @@ jobs:
         run: >-
           docker build
           --target test
-          --file named-entity-recognition-service/Dockerfile
-          named-entity-recognition-service
+          --file forwardmeasure-nlp-named-entity-recognition-service/Dockerfile
+          forwardmeasure-nlp-named-entity-recognition-service
 

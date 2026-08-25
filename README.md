@@ -5,10 +5,10 @@ and model-serving implementations shared across ForwardMeasure verticals.
 
 The first capability is implementation-neutral named entity recognition:
 
-- `named-entity-recognition-contracts` publishes the canonical OpenAPI contract.
-- `named-entity-recognition-client-java` generates a Java 25 client.
-- `named-entity-recognition-client-typescript` generates a TypeScript fetch client.
-- `named-entity-recognition-service` generates the Python client and FastAPI edge,
+- `forwardmeasure-nlp-named-entity-recognition-contracts` publishes the canonical OpenAPI contract.
+- `forwardmeasure-nlp-named-entity-recognition-client-java` generates a Java 25 client.
+- `forwardmeasure-nlp-named-entity-recognition-client-typescript` generates a TypeScript fetch client.
+- `forwardmeasure-nlp-named-entity-recognition-service` generates the Python client and FastAPI edge,
   and supplies the GLiNER-backed KServe predictor.
 - `forwardmeasure-nlp-bom` provides the supported Maven dependency surface.
 
@@ -20,8 +20,8 @@ modules contain no independent library or plugin versions.
 ```bash
 mvn clean verify
 docker build --target test \
-  -f named-entity-recognition-service/Dockerfile \
-  named-entity-recognition-service
+  -f forwardmeasure-nlp-named-entity-recognition-service/Dockerfile \
+  forwardmeasure-nlp-named-entity-recognition-service
 ```
 
 The equivalent complete local gate is `./scripts/verify.sh`. Version tags and

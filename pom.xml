@@ -4,6 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>com.forwardmeasure.platform</groupId>
+        <artifactId>forwardmeasure-platform</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../forwardmeasure-platform/pom.xml</relativePath>
+    </parent>
+
     <groupId>com.forwardmeasure.nlp</groupId>
     <artifactId>forwardmeasure-nlp-parent</artifactId>
     <version>${revision}</version>
@@ -30,13 +37,7 @@
 
     <properties>
         <revision>1.0.0</revision>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <project.build.outputTimestamp>1980-01-01T00:00:02Z</project.build.outputTimestamp>
-        <maven.compiler.release>25</maven.compiler.release>
 
-        <jackson.version>2.22.1</jackson.version>
-        <jakarta.annotation.version>3.0.0</jakarta.annotation.version>
         <python.runtime.version>3.12.12</python.runtime.version>
         <python.runtime.image.digest>sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c</python.runtime.image.digest>
         <gliner.version>0.2.28</gliner.version>
@@ -53,37 +54,19 @@
         <container-image.tag>${revision}</container-image.tag>
         <container-image.push>false</container-image.push>
 
-        <maven.clean.version>3.5.0</maven.clean.version>
-        <maven.compiler.version>3.15.0</maven.compiler.version>
-        <maven.resources.version>3.3.1</maven.resources.version>
-        <maven.surefire.version>3.5.4</maven.surefire.version>
-        <maven.jar.version>3.5.0</maven.jar.version>
-        <maven.install.version>3.1.4</maven.install.version>
-        <maven.deploy.version>3.1.4</maven.deploy.version>
-        <maven.site.version>3.22.0</maven.site.version>
-        <maven.enforcer.version>3.6.3</maven.enforcer.version>
-        <flatten.version>1.8.0</flatten.version>
-        <openapi-generator.version>7.21.0</openapi-generator.version>
         <fabric8.docker.version>0.46.0</fabric8.docker.version>
     </properties>
 
     <modules>
-        <module>named-entity-recognition-contracts</module>
-        <module>named-entity-recognition-client-java</module>
-        <module>named-entity-recognition-client-typescript</module>
-        <module>named-entity-recognition-service</module>
+        <module>forwardmeasure-nlp-named-entity-recognition-contracts</module>
+        <module>forwardmeasure-nlp-named-entity-recognition-client-java</module>
+        <module>forwardmeasure-nlp-named-entity-recognition-client-typescript</module>
+        <module>forwardmeasure-nlp-named-entity-recognition-service</module>
         <module>forwardmeasure-nlp-bom</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>${jackson.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
@@ -91,12 +74,12 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>named-entity-recognition-contracts</artifactId>
+                <artifactId>forwardmeasure-nlp-named-entity-recognition-contracts</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>named-entity-recognition-client-java</artifactId>
+                <artifactId>forwardmeasure-nlp-named-entity-recognition-client-java</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
@@ -105,56 +88,6 @@
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>${maven.clean.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven.compiler.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven.resources.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven.surefire.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven.jar.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>${maven.install.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${maven.deploy.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>${maven.site.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>${maven.enforcer.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>flatten-maven-plugin</artifactId>
-                    <version>${flatten.version}</version>
-                </plugin>
                 <plugin>
                     <groupId>org.openapitools</groupId>
                     <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -179,7 +112,9 @@
                             <rules>
                                 <requireJavaVersion><version>[25,26)</version></requireJavaVersion>
                                 <requireMavenVersion><version>[3.9.9,4)</version></requireMavenVersion>
-                                <requirePluginVersions/>
+                                <requirePluginVersions>
+                                    <unCheckedPluginList>com.forwardmeasure.platform:forwardmeasure-platform-policy-maven-plugin</unCheckedPluginList>
+                                </requirePluginVersions>
                             </rules>
                         </configuration>
                     </execution>

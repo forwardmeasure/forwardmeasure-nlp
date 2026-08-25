@@ -8,7 +8,7 @@
         <artifactId>forwardmeasure-nlp-parent</artifactId>
         <version>${revision}</version>
     </parent>
-    <artifactId>named-entity-recognition-service</artifactId>
+    <artifactId>forwardmeasure-nlp-named-entity-recognition-service</artifactId>
     <packaging>pom</packaging>
     <name>ForwardMeasure Named Entity Recognition Service</name>
     <description>Engine-neutral KServe predictor; GLiNER is the first provider</description>

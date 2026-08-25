@@ -8,13 +8,13 @@
         <artifactId>forwardmeasure-nlp-parent</artifactId>
         <version>${revision}</version>
     </parent>
-    <artifactId>named-entity-recognition-client-typescript</artifactId>
+    <artifactId>forwardmeasure-nlp-named-entity-recognition-client-typescript</artifactId>
     <name>ForwardMeasure Named Entity Recognition TypeScript Client</name>
     <description>Generated TypeScript fetch client for the NER API</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>named-entity-recognition-contracts</artifactId>
+            <artifactId>forwardmeasure-nlp-named-entity-recognition-contracts</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
