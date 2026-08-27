@@ -97,6 +97,17 @@
                                 <phase>package</phase>
                                 <goals><goal>build</goal></goals>
                             </execution>
+                            <!--
+                            Was missing entirely - this image only ever built locally, never
+                            pushed, no matter what flags were passed, with no error. skipPush
+                            (see forwardmeasure-platform's shared pluginManagement) defaults to
+                            true; -Dcontainer-image.push=true flips it false.
+                            -->
+                            <execution>
+                                <id>push-ner-image</id>
+                                <phase>package</phase>
+                                <goals><goal>push</goal></goals>
+                            </execution>
                         </executions>
                         <configuration>
                             <images>
