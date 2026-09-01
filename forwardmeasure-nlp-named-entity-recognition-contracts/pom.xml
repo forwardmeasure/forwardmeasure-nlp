@@ -9,14 +9,7 @@
         <version>${revision}</version>
     </parent>
     <artifactId>forwardmeasure-nlp-named-entity-recognition-contracts</artifactId>
+    <packaging>jar</packaging>
     <name>ForwardMeasure Named Entity Recognition Contracts</name>
     <description>Canonical implementation-neutral NER OpenAPI contract</description>
-    <build>
-        <resources>
-            <resource>
-                <directory>${project.parent.basedir}/contracts/openapi</directory>
-                <targetPath>META-INF/forwardmeasure/nlp/openapi</targetPath>
-            </resource>
-        </resources>
-    </build>
 </project>

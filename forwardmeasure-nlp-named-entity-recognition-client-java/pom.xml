@@ -42,6 +42,31 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-openapi-spec</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>forwardmeasure-nlp-named-entity-recognition-contracts</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <includes>META-INF/openapi/**</includes>
+                                    <outputDirectory>${project.build.directory}/unpacked-openapi-spec</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <executions>
@@ -50,7 +75,7 @@
                         <phase>generate-sources</phase>
                         <goals><goal>generate</goal></goals>
                         <configuration>
-                            <inputSpec>${project.parent.basedir}/contracts/openapi/named-entity-recognition-api.yaml</inputSpec>
+                            <inputSpec>${project.build.directory}/unpacked-openapi-spec/META-INF/openapi/named-entity-recognition-api.yaml</inputSpec>
                             <generatorName>java</generatorName>
                             <library>native</library>
                             <apiPackage>com.forwardmeasure.nlp.ner.client.api</apiPackage>
