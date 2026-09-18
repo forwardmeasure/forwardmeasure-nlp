@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.forwardmeasure.platform</groupId>
         <artifactId>forwardmeasure-platform</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <relativePath>../forwardmeasure-platform/pom.xml</relativePath>
     </parent>
 
@@ -36,7 +36,7 @@
     </scm>
 
     <properties>
-        <revision>1.0.0</revision>
+        <revision>1.1.0</revision>
 
         <python.runtime.version>3.12.12</python.runtime.version>
         <python.runtime.image.digest>sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c</python.runtime.image.digest>
@@ -53,8 +53,6 @@
         <container-image.group>forwardmeasure</container-image.group>
         <container-image.tag>${revision}</container-image.tag>
         <container-image.push>false</container-image.push>
-
-        <fabric8.docker.version>0.46.0</fabric8.docker.version>
     </properties>
 
     <modules>
