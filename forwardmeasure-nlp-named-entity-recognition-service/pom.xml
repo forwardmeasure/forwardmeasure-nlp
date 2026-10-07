@@ -181,4 +181,9 @@
             </build>
         </profile>
     </profiles>
+  <properties>
+    <!-- Build runtime/frontend assemblies fresh; cache reuse is reserved for libraries. -->
+    <maven.build.cache.skipCache>true</maven.build.cache.skipCache>
+    <maven.build.cache.skipSave>true</maven.build.cache.skipSave>
+  </properties>
 </project>

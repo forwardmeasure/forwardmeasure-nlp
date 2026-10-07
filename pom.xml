@@ -36,7 +36,8 @@
     </scm>
 
     <properties>
-        <revision>1.1.0</revision>
+    <!-- Project release identity is local for Maven CI-friendly reactor parent resolution. -->
+    <revision>1.1.0</revision>
 
         <python.runtime.version>3.12.12</python.runtime.version>
         <python.runtime.image.digest>sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c</python.runtime.image.digest>
@@ -49,10 +50,6 @@
         <python.pytest.version>9.0.2</python.pytest.version>
         <python.pytest-asyncio.version>1.3.0</python.pytest-asyncio.version>
 
-        <container-image.registry>docker.io</container-image.registry>
-        <container-image.group>forwardmeasure</container-image.group>
-        <container-image.tag>${revision}</container-image.tag>
-        <container-image.push>false</container-image.push>
     </properties>
 
     <modules>
@@ -65,11 +62,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>jakarta.annotation</groupId>
-                <artifactId>jakarta.annotation-api</artifactId>
-                <version>${jakarta.annotation.version}</version>
-            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>forwardmeasure-nlp-named-entity-recognition-contracts</artifactId>
@@ -89,12 +81,10 @@
                 <plugin>
                     <groupId>org.openapitools</groupId>
                     <artifactId>openapi-generator-maven-plugin</artifactId>
-                    <version>${openapi-generator.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>${fabric8.docker.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

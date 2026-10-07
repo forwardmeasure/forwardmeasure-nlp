@@ -13,6 +13,11 @@
     <description>Generated framework-neutral Java client for the NER API</description>
     <dependencies>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>forwardmeasure-nlp-named-entity-recognition-contracts</artifactId>
             <scope>provided</scope>
